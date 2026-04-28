@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.12.0",
+    "motion": "^12.38.0",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sql-template-tag": "^5.2.1",
+    "sqlite": "^5.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
+  },
+  "name": "frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build --webpack",
+    "dev": "next dev --webpack",
+    "start": "next start --webpack",
+    "db:init": "node src/db/init.js"
+  },
+  "version": "0.1.0"
+}
