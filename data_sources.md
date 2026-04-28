@@ -34,7 +34,7 @@
 
 #### id's and due dates:
 
--SR_NUMBER - identiefier for service request - unique
+-SR_NUMBER - identifier for service request - unique
 -NSN_ORDERED - national stock number
 -- first four - FSC - next 9 - NIIN
 - NIIN - NIIN
