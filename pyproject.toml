@@ -2,17 +2,18 @@
 name = "mdm-hackathon-2026"
 version = "0.1.0"
 authors = [
-    "dj.street@knexus.ai",
-    "michael.fremin2@gmail.com",
-    "kevin.rafooi@knexus.ai",
-    "max.clive@knexus.ai",
-    "adam.ahmed@knexus.ai",
+    { name = "Dj Streat", email = "dj.streat@knexus.ai" },
+    { name = "Michael Fermin", email = "michael.fermin2@gmail.com" },
+    { name = "Adam Ahmed", email = "adam.ahmed@knexus.ai" },
+    { name = "Kevin Raoofi", email = "kevin.raoofi@knexus.ai" },
+    { name = "Max Clive", email = "max.clive@knexus.ai" },
 ]
 description = "MDM Hackathon 2026"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.128.8",
     "google-genai>=1.31.0",
+    "jupyterlab",
     "uvicorn>=0.41.0",
     "pydantic-ai-slim[spec]>=1.74.0",
 ]
@@ -22,41 +23,3 @@ dependencies = [
 
 [tool.uv]
 keyring-provider = "subprocess"
-
-# [tool.uv.workspace]
-# members = [
-#     "packages/*",
-# ]
-
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "venv",
-    ".pytest_cache",
-    ".vscode",
-    ".idea",
-    ".ruff_cache",
-    "kloak/util/logger.py",
-    "example.py",
-    "test_data.py",
-]
-
-[build-system]
-requires = ["uv_build>=0.9.18,<0.10.0"]
-build-backend = "uv_build"
