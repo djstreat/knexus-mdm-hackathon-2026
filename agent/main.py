@@ -3,6 +3,7 @@ import asyncio
 import json
 import os
 import sqlite3
+from ast import withitem
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -260,3 +261,7 @@ if __name__ == "__main__":
         }
     )
     print(json.dumps(output.model_dump(mode="json"), indent=2))
+
+    # Output report to database table "reports"
+    with sqlite3.connect(args.db) as conn:
+        conn.execute("INSERT INTO reports (report) VALUES (?)", (output.report,))
