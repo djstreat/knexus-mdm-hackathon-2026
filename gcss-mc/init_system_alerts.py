@@ -2,7 +2,6 @@ import argparse
 import sqlite3
 from pathlib import Path
 
-
 DEFAULT_DB_PATH = Path(__file__).resolve().parent / "hackathon_data.sqlite3"
 UTC_TIMESTAMP_SQL = "STRFTIME('%Y-%m-%dT%H:%M:%SZ', 'now')"
 
@@ -23,6 +22,14 @@ CREATE TABLE IF NOT EXISTS system_alerts (
     source_column TEXT,
     created_at TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%dT%H:%M:%SZ', 'now')),
     updated_at TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%dT%H:%M:%SZ', 'now'))
+);
+"""
+
+CREATE_REPORTS_SQL = """
+CREATE TABLE IF NOT EXISTS reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    report TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (STRFTIME('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 """
 
@@ -94,6 +101,11 @@ def init_system_alerts(db_path: Path) -> None:
             conn.execute(statement)
 
 
+def init_reports(db_path: Path) -> None:
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(CREATE_REPORTS_SQL)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Initialize the system_alerts table in the GCSS-MC SQLite database."
@@ -108,6 +120,9 @@ def main() -> None:
 
     init_system_alerts(args.db)
     print(f"Initialized system_alerts in {args.db}")
+
+    init_reports(args.db)
+    print(f"Initialized reports in {args.db}")
 
 
 if __name__ == "__main__":
