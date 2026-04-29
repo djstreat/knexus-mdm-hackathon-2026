@@ -8,6 +8,7 @@
     "ai": "^6.0.170",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cross-env": "^10.1.0",
     "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
     "next": "16.2.4",
@@ -29,9 +30,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build --webpack",
-    "dev": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next dev --webpack",
-    "start": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next start --webpack"
+    "build": "cross-env NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build --webpack",
+    "dev": "cross-env NODE_OPTIONS='--no-warnings=ExperimentalWarning' next dev --webpack",
+    "start": "cross-env NODE_OPTIONS='--no-warnings=ExperimentalWarning' next start --webpack"
   },
   "version": "0.1.0"
 }
