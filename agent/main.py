@@ -3,7 +3,8 @@ import asyncio
 import json
 import os
 import sqlite3
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Literal
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -18,6 +19,12 @@ SYSTEM_PROMPT = """You are a GCSS-MC maintenance and supply data assistant.
 Use the available SQLite query tool to answer questions about the database.
 Only run read-only SELECT queries unless the user explicitly asks you to create an alert.
 When querying, use the schema supplied in the user prompt as the source of truth.
+Use the create_system_alert tool to inform marine analysts users of the following:
+    - Identification of parts and equipment (specific or all) with chronic maintenance issues
+    - Data quality issues arising from inconsistent, mislabeled, or missing data
+    - Order pattern trends that negatively affect supply chain health
+    - "End-items" that are frequently ordered but have high maintenance costs
+    - Bottlenecks identified in the order fulfillment and acquisition process
 Return a markdown-formatted report in the report field.
 
 The database contains historical maintenance and supply data for the GCSS MC system.
@@ -50,10 +57,12 @@ class SystemAlert(BaseModel):
 
     alert_name: str
     alert_description: str
-    severity: str = "medium"
+    severity: Literal["low", "medium", "high", "critical"] = "medium"
     tamcn: str | None = None
     sr_number: str | None = None
     serial_number: str | None = None
+    created_at: datetime
+    updated_at: datetime
 
 
 class AgentReport(BaseModel):
@@ -108,12 +117,13 @@ def create_system_alert(
     ctx: RunContext[GCSSAgentDeps],
     alert_name: str,
     alert_description: str,
-    severity: str = "medium",
+    severity: Literal["low", "medium", "high", "critical"] = "medium",
     tamcn: str | None = None,
     sr_number: str | None = None,
     serial_number: str | None = None,
 ) -> None:
     """Creates a system alert, optionally linked to a TAMCN, service request, or serial number."""
+    now = datetime.now(UTC)
     alert = SystemAlert(
         alert_name=alert_name,
         alert_description=alert_description,
@@ -121,11 +131,16 @@ def create_system_alert(
         tamcn=tamcn,
         sr_number=sr_number,
         serial_number=serial_number,
+        created_at=now,
+        updated_at=now,
     )
     ctx.deps.system_alerts.append(alert)
 
+    print(f"Created system alert: {alert_name}")
+
     conn = sqlite3.connect(ctx.deps.sqlite_db_path)
     cursor = conn.cursor()
+    timestamp = format_utc_timestamp(now)
     cursor.execute(
         """
         INSERT INTO system_alerts (
@@ -134,9 +149,11 @@ def create_system_alert(
             severity,
             tamcn,
             sr_number,
-            serial_number
+            serial_number,
+            created_at,
+            updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             alert.alert_name,
@@ -145,6 +162,8 @@ def create_system_alert(
             alert.tamcn,
             alert.sr_number,
             alert.serial_number,
+            timestamp,
+            timestamp,
         ),
     )
     conn.commit()
@@ -157,6 +176,11 @@ gcss_tools = [
 ]
 
 MODEL_NAME = "gemini-3.1-pro-preview"
+
+
+def format_utc_timestamp(value: datetime) -> str:
+    """Return a stable UTC timestamp string for SQLite storage."""
+    return value.isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
 def create_vertex_model() -> GoogleModel:
@@ -202,7 +226,6 @@ def test_result():
     print(type(results))
 
 
-1
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--db", type=str, required=True)
@@ -236,4 +259,4 @@ if __name__ == "__main__":
             "system_alerts": deps.system_alerts,
         }
     )
-    print(json.dumps(output.model_dump(), indent=2))
+    print(json.dumps(output.model_dump(mode="json"), indent=2))
