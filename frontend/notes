@@ -1,0 +1,7 @@
+TAMCN = "model" or "type of thing", like Jeep or etc
+
+SERIAL_NUMBER = specific piece of equipment
+
+SR_NUMBER = specific repair
+
+RNSN = Part number (Part type, e.g. engine)

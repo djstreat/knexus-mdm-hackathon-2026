@@ -18,10 +18,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build --webpack",
-    "dev": "next dev --webpack",
-    "start": "next start --webpack",
-    "db:init": "node src/db/init.js"
+    "build": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build --webpack",
+    "dev": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next dev --webpack",
+    "start": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next start --webpack"
   },
   "version": "0.1.0"
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Text } from "@/components/text";
 import { DescriptionList, DescriptionTerm, DescriptionDetails } from "@/components/description-list";
 import { Badge } from "@/components/badge";
+import { getRepairInfo } from "@/app/actions";
 import { Loader2 } from "lucide-react";
 
 export function RepairInfo({ srNumber }) {
@@ -15,11 +16,7 @@ export function RepairInfo({ srNumber }) {
     async function fetchRepair() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/repair/${srNumber}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch repair info: ${response.statusText}`);
-        }
-        const data = await response.json();
+        const data = await getRepairInfo(srNumber);
         setRepairData(data);
       } catch (err) {
         setError(err.message);
@@ -76,7 +73,7 @@ export function RepairInfo({ srNumber }) {
 
         <DescriptionTerm>Status</DescriptionTerm>
         <DescriptionDetails>
-          <Badge color="zinc">{repairData.job_status_code}</Badge>
+          <Badge color="zinc">{repairData.job_status_date}</Badge>
         </DescriptionDetails>
       </DescriptionList>
     </div>
