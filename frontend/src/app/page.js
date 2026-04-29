@@ -187,6 +187,13 @@ export default function Dashboard() {
 								</SidebarItem>
 							))}
 						</SidebarSection>
+						<SidebarSection>
+							<SidebarHeading>Navigation</SidebarHeading>
+							<SidebarItem href="/" current>
+								Dashboard
+							</SidebarItem>
+							<SidebarItem href="/reports">Reports</SidebarItem>
+						</SidebarSection>
 					</SidebarBody>
 				</Sidebar>
 			}

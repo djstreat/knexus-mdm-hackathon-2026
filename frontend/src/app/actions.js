@@ -29,3 +29,15 @@ export async function getRepairInfo(srNumber) {
 		throw new Error(error.message || "Internal Server Error");
 	}
 }
+
+export async function getReports() {
+	const sql = getDb().createTagStore();
+
+	try {
+		const reports = sql.all`SELECT * FROM reports ORDER BY created_at DESC`;
+		return reports.map((report) => ({ ...report }));
+	} catch (error) {
+		console.error("Database error:", error);
+		throw new Error(error.message || "Internal Server Error");
+	}
+}
