@@ -15,6 +15,8 @@ dependencies = [
     "google-genai>=1.31.0",
     "jupyterlab",
     "uvicorn>=0.41.0",
+    "pydantic>=2.13.3",
+    "pydantic-ai>=1.87.0",
     "pydantic-ai-slim[spec]>=1.74.0",
 ]
 
@@ -23,3 +25,10 @@ dependencies = [
 
 [tool.uv]
 keyring-provider = "subprocess"
+
+[dependency-groups]
+notebook = [
+    "ipykernel>=7.2.0",
+    "marimo>=0.23.3",
+    "polars>=1.40.1",
+]

@@ -35,3 +35,8 @@ There is a data dictionary for each csv stored as a csv with a similar name that
 - GROUP NSN by SOS
 
 The files 'rnsn_labels.csv' and 'ramcn_lables.csv' are machine generated in a separate process from the data above and are useful in explainability but should be ommited from the initial analysis.
+
+# USER STORIES:
+--- Broad ---
+- "What's wrong with the data now?"
+- "What's wrong with the parts/vendor/maintenance request?"
