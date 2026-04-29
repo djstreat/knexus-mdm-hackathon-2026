@@ -8,7 +8,8 @@ import {
 	ChevronUp,
 	ShieldAlert,
 } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { getAlerts } from "@/app/actions";
 import { RepairInfo } from "@/components/repair-info";
 import {
 	Sidebar,
@@ -21,57 +22,18 @@ import { SidebarLayout } from "@/components/sidebar-layout";
 import { Switch, SwitchField } from "@/components/switch";
 import { Text } from "@/components/text";
 
-// sr_number_x2CljIDyRaiOFhcMcZ_a
-// sr_number_HCM3Z2QkCjG136MlzlOP
-// sr_number_A1aX91v4E8E6TP84aata
-// sr_number_IRvRnIj4zI8GlOApC_9X
-// sr_number_VFpVomlntnagw6w3pYYW
-// sr_number_wUs4okvIpIr7wG5hLTgo
-
-const ALERTS = [
-	{
-		id: "1",
-		srNumber: "sr_number_x2CljIDyRaiOFhcMcZ_a",
-		title: "Critical Repair Anomaly Detected",
-		severity: "mission-critical",
-		createdAt: new Date("2026-04-28T10:00:00Z"),
-	},
-	{
-		id: "2",
-		srNumber: "sr_number_HCM3Z2QkCjG136MlzlOP",
-		title: "High Priority Maintenance Needed",
-		severity: "urgent",
-		createdAt: new Date("2026-04-28T11:30:00Z"),
-	},
-	{
-		id: "3",
-		srNumber: "sr_number_A1aX91v4E8E6TP84aata",
-		title: "Scheduled Inspection Overdue",
-		severity: "warning",
-		createdAt: new Date("2026-04-27T15:00:00Z"),
-	},
-	{
-		id: "4",
-		srNumber: "sr_number_IRvRnIj4zI8GlOApC_9X",
-		title: "Critical Component Failure",
-		severity: "mission-critical",
-		createdAt: new Date("2026-04-28T09:00:00Z"),
-	},
-	{
-		id: "5",
-		srNumber: "sr_number_VFpVomlntnagw6w3pYYW",
-		title: "Urgent Service Required",
-		severity: "urgent",
-		createdAt: new Date("2026-04-28T12:00:00Z"),
-	},
-	{
-		id: "6",
-		srNumber: "sr_number_wUs4okvIpIr7wG5hLTgo",
-		title: "Minor Maintenance Alert",
-		severity: "warning",
-		createdAt: new Date("2026-04-27T18:00:00Z"),
-	},
-];
+const mapSeverity = (severity) => {
+	switch (severity) {
+		case "critical":
+			return "mission-critical";
+		case "high":
+			return "urgent";
+		case "medium":
+			return "warning";
+		default:
+			return "warning";
+	}
+};
 
 const SEVERITY_ORDER = {
 	"mission-critical": 0,
@@ -147,24 +109,45 @@ export default function Dashboard() {
 	const [sortBySeverity, setSortBySeverity] = useState(true);
 	const [expandedId, setExpandedId] = useState(null);
 	const [selectedDate, setSelectedDate] = useState("all");
+	const [alerts, setAlerts] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		async function fetchAlerts() {
+			try {
+				const data = await getAlerts();
+				const processed = data.map((alert) => ({
+					...alert,
+					createdAt: new Date(alert.createdAt),
+					severity: mapSeverity(alert.severity),
+				}));
+				setAlerts(processed);
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoading(false);
+			}
+		}
+		fetchAlerts();
+	}, []);
 
 	const filteredAlerts = useMemo(() => {
-		let alerts = [...ALERTS];
+		let filtered = [...alerts];
 		if (selectedDate !== "all") {
-			alerts = alerts.filter((alert) => {
+			filtered = filtered.filter((alert) => {
 				const dateStr = alert.createdAt.toISOString().split("T")[0];
 				return dateStr === selectedDate;
 			});
 		}
 
-		return alerts.sort((a, b) => {
+		return filtered.sort((a, b) => {
 			if (sortBySeverity) {
 				return SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
 			} else {
 				return b.createdAt.getTime() - a.createdAt.getTime();
 			}
 		});
-	}, [sortBySeverity, selectedDate]);
+	}, [sortBySeverity, selectedDate, alerts]);
 
 	const toggleAlert = (id) => {
 		setExpandedId((prevId) => (prevId === id ? null : id));
@@ -221,7 +204,12 @@ export default function Dashboard() {
 					</div>
 				</header>
 
-				{filteredAlerts.length > 0 ? (
+				{loading ? (
+					<div className="flex items-center justify-center py-12 text-zinc-500">
+						<Bell className="size-12 mb-4 opacity-20 animate-pulse" />
+						<p>Loading alerts...</p>
+					</div>
+				) : filteredAlerts.length > 0 ? (
 					filteredAlerts.map((alert) => (
 						<AlertCard
 							key={alert.id}

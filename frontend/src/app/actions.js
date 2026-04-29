@@ -41,3 +41,15 @@ export async function getReports() {
 		throw new Error(error.message || "Internal Server Error");
 	}
 }
+
+export async function getAlerts() {
+	const sql = getDb().createTagStore();
+
+	try {
+		const alerts = sql.all`SELECT id, alert_name as title, severity, sr_number as srNumber, created_at as createdAt FROM system_alerts`;
+		return alerts.map((alert) => ({ ...alert }));
+	} catch (error) {
+		console.error("Database error:", error);
+		throw new Error(error.message || "Internal Server Error");
+	}
+}
